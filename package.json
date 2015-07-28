@@ -6,6 +6,7 @@
   "dependencies": {
     "md5": "^2.0.0",
     "node-telegram-bot": "0.0.18",
+    "pg": "^4.4.0",
     "valid-url": "^1.0.9",
     "webshot": "^0.16.0"
   },

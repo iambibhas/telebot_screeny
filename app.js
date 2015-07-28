@@ -1,8 +1,12 @@
 var Bot = require('node-telegram-bot'),
     webshot = require('webshot'),
-    md5 = require('md5'),
     url = require('valid-url'),
+    md5 = require('md5'),
     fs = require('fs');
+    pg = require('pg');
+
+var conn_string = ["postgres://", process.env.PG_USERNAME, ":", process.env.PG_PASS, "@localhost/", process.env.PG_DBNAME].join('');
+console.log(conn_string);
 
 var user_agents = [
     // Chrome
@@ -51,7 +55,12 @@ var webshot_options = {
     // pick a random user agent
     user_agent: user_agents[Math.floor(Math.random()*user_agents.length)],
     // we don't need high quality photos
-    quality: 50
+    quality: 50,
+    phantomConfig: {
+        'ssl-protocol': 'any',
+        'ignore-ssl-errors': 'yes',
+        'web-security': 'false'
+    }
 }
 
 var bot = new Bot({
@@ -80,9 +89,10 @@ var bot = new Bot({
         message_text = 'http://' + message_text;
     }
 
+    console.log(message_text);
+
     // check if the url was actually a valid url
     if (!url.isWebUri(message_text)) {
-        console.log(message_text);
         send_message(bot, message, 'Sorry, That does not look like a valid url.');
         return;
     }
@@ -90,6 +100,22 @@ var bot = new Bot({
     // generate file name and location
     var hash = md5(message_text);
     var file_location = './screenies/' + hash + '.jpg';
+
+    pg.connect(conn_string, function(err, client, done) {
+        if(err) {
+            return console.error('error fetching client from pool', err);
+        }
+        client.query('INSERT INTO log(url, hash) values($1, $2)', [message_text, hash], function(err, result) {
+            //call `done()` to release the client back to the pool
+            done();
+
+            if(err) {
+                return console.error('error running query', err);
+            }
+
+            console.log('result', result);
+        });
+    });
 
     // If a screenshot already exists for the given url's hash, return it
     if (fs.existsSync(file_location)) {
