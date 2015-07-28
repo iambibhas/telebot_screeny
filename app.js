@@ -20,6 +20,7 @@ var user_agents = [
 ];
 
 var send_message = function(bot, message, text) {
+    // sends a text message
     bot.sendMessage({
         chat_id: message.chat.id,
         reply_to_message_id: message.message_id,
@@ -28,6 +29,7 @@ var send_message = function(bot, message, text) {
 }
 
 var send_photo = function(bot, message, file_location) {
+    // sends a photo, with the chat action "Sending photo >>>"
     bot.sendChatAction({
         chat_id: message.chat.id,
         action: 'upload_photo'
@@ -46,7 +48,9 @@ var send_photo = function(bot, message, file_location) {
 }
 
 var webshot_options = {
+    // pick a random user agent
     user_agent: user_agents[Math.floor(Math.random()*user_agents.length)],
+    // we don't need high quality photos
     quality: 50
 }
 
@@ -61,28 +65,33 @@ var bot = new Bot({
     }
     var message_text = message.text.toLowerCase();
 
+    // if the message starts with /screeny command, ignore it
     if (message_text.lastIndexOf('/screeny', 0) === 0) {
         message_text = message_text.replace('/screeny', '').trim()
 
         if (!message_text) {
+            // if the message was only "/screeny"
             return;
         }
     }
 
     if (message_text.lastIndexOf('http', 0) < 0) {
+        // if the url doesn't have a protocol, assume http
         message_text = 'http://' + message_text;
     }
 
+    // check if the url was actually a valid url
     if (!url.isWebUri(message_text)) {
         console.log(message_text);
         send_message(bot, message, 'Sorry, That does not look like a valid url.');
         return;
     }
 
+    // generate file name and location
     var hash = md5(message_text);
     var file_location = './screenies/' + hash + '.jpg';
 
-    // If a screenshot already exists for the given url, return it
+    // If a screenshot already exists for the given url's hash, return it
     if (fs.existsSync(file_location)) {
         send_photo(bot, message, file_location);
 
@@ -90,9 +99,11 @@ var bot = new Bot({
         return;
     }
 
+    // fetch screenshot, save it and return
     webshot(message_text, file_location, webshot_options, function(err) {
         console.log(err);
         if (err !== null) {
+            // there was an error
             send_message(bot, message, 'Sorry, could not take a screenshot of that. :(');
         } else {
             send_photo(bot, message, file_location);
