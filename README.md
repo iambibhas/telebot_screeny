@@ -25,7 +25,7 @@ NodeJS level
 
 How to Run
 ===
- - Install all above dependencies
+ - Install all above dependencies by running `npm install`
  - Make sure your OS user has write access to the bot's directory
  - Then run the bot like -
 
