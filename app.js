@@ -19,6 +19,32 @@ var user_agents = [
     'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/43.0.2357.130 Chrome/43.0.2357.130 Safari/537.36',
 ];
 
+var send_message = function(bot, message, text) {
+    bot.sendMessage({
+        chat_id: message.chat.id,
+        reply_to_message_id: message.message_id,
+        text: text
+    });
+}
+
+var send_photo = function(bot, message, file_location) {
+    bot.sendChatAction({
+        chat_id: message.chat.id,
+        action: 'upload_photo'
+    });
+
+    bot.sendPhoto({
+        chat_id: message.chat.id,
+        reply_to_message_id: message.message_id,
+        files: {
+            photo: file_location
+        }
+    }, function (err, msg) {
+        console.log(err);
+        console.log(msg);
+    });
+}
+
 var webshot_options = {
     user_agent: user_agents[Math.floor(Math.random()*user_agents.length)],
     quality: 50
@@ -49,11 +75,7 @@ var bot = new Bot({
 
     if (!url.isWebUri(message_text)) {
         console.log(message_text);
-        bot.sendMessage({
-            chat_id: message.chat.id,
-            reply_to_message_id: message.message_id,
-            text: 'Sorry, That does not look like a valid url.'
-        });
+        send_message(bot, message, 'Sorry, That does not look like a valid url.');
         return;
     }
 
@@ -62,16 +84,7 @@ var bot = new Bot({
 
     // If a screenshot already exists for the given url, return it
     if (fs.existsSync(file_location)) {
-        bot.sendPhoto({
-            chat_id: message.chat.id,
-            reply_to_message_id: message.message_id,
-            files: {
-                photo: file_location
-            }
-        }, function (err, msg) {
-            console.log(err);
-            console.log(msg);
-        });
+        send_photo(bot, message, file_location);
 
         console.log('Not Calling Webshot!!');
         return;
@@ -80,22 +93,9 @@ var bot = new Bot({
     webshot(message_text, file_location, webshot_options, function(err) {
         console.log(err);
         if (err !== null) {
-            bot.sendMessage({
-                chat_id: message.chat.id,
-                reply_to_message_id: message.message_id,
-                text: 'Sorry, could not take a screenshot of that. :('
-            });
+            send_message(bot, message, 'Sorry, could not take a screenshot of that. :(');
         } else {
-            bot.sendPhoto({
-                chat_id: message.chat.id,
-                reply_to_message_id: message.message_id,
-                files: {
-                    photo: file_location
-                }
-            }, function (err, msg) {
-                console.log(err);
-                console.log(msg);
-            });
+            send_photo(bot, message, file_location);
         }
     });
 })
