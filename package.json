@@ -1,0 +1,32 @@
+{
+  "name": "screeny-telegram-bot",
+  "version": "1.0.0",
+  "description": "A Telegram bot to generates screenshot of given URL",
+  "main": "app.js",
+  "dependencies": {
+    "md5": "^2.0.0",
+    "node-telegram-bot": "0.0.18",
+    "valid-url": "^1.0.9",
+    "webshot": "^0.16.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "SCREENYBOT_TOKEN='Your Token' node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/iambibhas/telebot_screeny.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "screenshot",
+    "phantomjs"
+  ],
+  "author": "Bibhas D",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iambibhas/telebot_screeny/issues"
+  },
+  "homepage": "https://github.com/iambibhas/telebot_screeny"
+}
