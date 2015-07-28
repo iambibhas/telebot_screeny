@@ -22,6 +22,17 @@ NodeJS level
  - webshot
  - md5
  - valid-url
+ - pg
+
+PostgreSQL Table schema
+===
+
+    CREATE TABLE log (
+        id serial PRIMARY KEY,
+        url varchar(1000) NOT NULL,
+        hash varchar(50) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
 How to Run
 ===
@@ -31,4 +42,7 @@ How to Run
 
         $ SCREENYBOT_TOKEN='Your Token' node app.js
 
+ - If you'd like to log the urls to a postgresql db, use this -
+
+        $ SCREENYBOT_TOKEN='Your Token' PG_USERNAME='username' PG_PASS='password' PG_DBNAME='databasename' node app.js
 
