@@ -77,11 +77,15 @@ var bot = new Bot({
     // if the message starts with /screeny command, ignore it
     if (message_text.lastIndexOf('/screeny', 0) === 0) {
         message_text = message_text.replace('/screeny', '').trim()
+    }
+    // if the message starts with @screenybot, ignore it
+    if (message_text.lastIndexOf('@screenybot', 0) === 0) {
+        message_text = message_text.replace('@screenybot', '').trim()
+    }
 
-        if (!message_text) {
-            // if the message was only "/screeny"
-            return;
-        }
+    if (!message_text) {
+        // if the message was only "/screeny"
+        return;
     }
 
     if (message_text.lastIndexOf('http', 0) < 0) {
